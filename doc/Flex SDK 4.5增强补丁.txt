@@ -1,0 +1,101 @@
+Flex SDK 4.5增强补丁
+
+要求：
+用户下载Flex SDK 4.5
+
+文件列表：
+asc.jar            需要替换在flex_sdk/lib目录下的同名文件
+Memory.swc  		包含flash.Memory类和顶级方法flash.SetDomainMemory()
+Base64MD5Test.rar	包含使用新功能特色的两个FlashDevelop演示项目，如下：
+					1)为as3corelib包中的MD5类，进行优化并使用补丁的新功能，结果和原版进行对比，可以看出执行速度有10倍内的提升。
+					2)为从网上下载的Base64类，进行优化并使用补丁的新功能，结果和原版进行对比，可以看出执行速度有10倍以上的提升。
+
+功能特色：
+1、双引号内的支持多行字符串,例如:
+	var a:String="aa
+bb
+cc
+";
+
+2、双引号内的字符串，支持 $变量名 转义为对应的变量值。例如：
+	showAlertMessage("使用改进的MD5,用时:$(st-startTime)毫秒,hash:$hash");
+
+3、增加内联函数，内联函数使用要求：
+	1)不能迭代调用内联函数。例如：
+		private function aaa():void {
+			bbb();
+		}
+		private inline function bbb():void {
+			ccc();
+		}
+		private inline function ccc():void {
+			bbb();
+		}
+
+	2)不能在条件语句内使用，因为内联函数已不是一个普通函数。例如：
+		if(myinlinefun())
+		{
+		...
+		}
+		while(myinlinefun())
+		{
+		...
+		}
+		for(;myinlinefun();)
+		{
+		...
+		}
+		a>b?myinlinefun():null;
+	3)不能作参数传递，因为内联函数已不是一个普通函数。例如：
+		stage.addEventListener("click",myinlinefun);
+
+4、添加和删除事件监听很方便，只需要+-即可，例如：
+	this:::"click"+=clickHandler
+	this:::"click"-=clickHandler
+
+5、添加flash.Memory类，高速读写单字节、整型、浮点型数据
+	需要导入as3类包Memory.swc到项目中
+	使用Memory类之前请先调用SetDomainMemory(bytes:ByteArray)方法，参数bytes的长度必须大于等于1024
+	注意 部分方法参数的顺序与haxe的Memory相反。
+
+package flash
+{
+	/**
+	 *
+	 * flash.Memory
+	 * 高速读写单字节、整型、浮点型数据
+	* ...
+	* @author Directed by kiwiw3
+	*/
+	public class Memory
+	{
+
+		public static function getByte (position:int) : int;
+
+		public static function getDouble (position:int) : Number;
+
+		public static function getI32 (position:int) : int;
+
+		public static function getFloat (position:int) : Number;
+
+		public static function getUI16 (position:int) : int;
+
+		public static function setByte (val:int, position:int) : void;
+
+		public static function setDouble (val:Number, position:int) : void;
+
+		public static function setI16 (val:int, position:int) : void;
+
+		public static function setI32 (val:int, position:int) : void;
+
+		public static function setFloat (val:Number, position:int) : void;
+
+		public static function signExtend1 (val:int) : int;
+
+		public static function signExtend16 (val:int) : int;
+
+		public static function signExtend8 (val:int) : int;
+
+	}
+
+}
